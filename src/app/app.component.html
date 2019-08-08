@@ -18,4 +18,10 @@
   </li>
 </ul>
 
+<div *ngFor="let event of agendaService.listEvents">
+  <p>{{event.summary}}</p>
+  <p>start : {{event.start.dateTime | date}}</p>
+  <p>end : {{event.end.dateTime | date}}</p>
+</div>
+
 <router-outlet></router-outlet>
