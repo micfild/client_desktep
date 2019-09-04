@@ -26,12 +26,12 @@ export class FullCalendarComponent implements OnInit {
   constructor(public agendaService: AgendaService) {
     this.eventData = [];
 
-    for(let el of agendaService.listEvents){
-      this.eventData.push = {
+    for(let el of this.agendaService.listEvents){
+      this.eventData.push({
         title: el.summary,
         start: el.start.dateTime,
         end: el.end.dateTime,
-      }
+      })
     }
 
     // this.eventData = [
@@ -105,7 +105,7 @@ export class FullCalendarComponent implements OnInit {
       firstDay: 1,
       selectable: true,
       selectHelper: true,
-      progressiveEventRendering: true,
+      // progressiveEventRendering: true,
       eventSources: [
 
         // your event source
@@ -113,8 +113,10 @@ export class FullCalendarComponent implements OnInit {
           events: this.eventData,
           color: 'black',     // an option!
           textColor: 'yellow', // an option!
-          rendering: 'background',
-        },
+          overlap: false,
+          durationEditable: false,
+          editable: false,
+        }
         // {
         //   events: this.events2,
         //   color: 'blue',     // an option!
@@ -181,9 +183,28 @@ export class FullCalendarComponent implements OnInit {
   }
 
   ngOnInit() {
+
+
+    this.agendaService.listEventEmitter.subscribe(() => {
+      console.log(this.agendaService.listEvents);
+      this.reloadCalendar();
+    })
+  }
+
+  private reloadCalendar(): void {
+    this.eventData = [];
+
+    for(let el of this.agendaService.listEvents){
+      this.eventData.push({
+        title: el.summary,
+        start: el.start.dateTime,
+        end: el.end.dateTime,
+      });
+    }
     $('#full-calendar').fullCalendar(
       this.defaultConfigurations
     );
+    console.log(this.eventData);
   }
 
 

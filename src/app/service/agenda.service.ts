@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {EventEmitter, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Event} from "../../entity/event";
 import {Free} from "../../entity/free";
@@ -9,6 +9,8 @@ import {Free} from "../../entity/free";
 export class AgendaService {
   listEvents : Array<Event>;
   listFreeTime : Array<Free>;
+  listEventEmitter = new EventEmitter<Array<Event>>();
+
   constructor(private httpClient: HttpClient) {
     this.getEvents();
     this.getFreeTime();
@@ -21,7 +23,8 @@ export class AgendaService {
           for(let event of result['hydra:member']){
             this.listEvents.push(Object.assign(new Event(), event));
           }
-          console.log(this.listEvents);
+          // console.log(this.listEvents);
+          this.listEventEmitter.emit(this.listEvents);
       })
   }
 
