@@ -1,14 +1,15 @@
-import {Component, OnInit, Input} from '@angular/core';
+import {Component, OnInit, Input } from '@angular/core';
 import fr from 'node_modules/fullcalendar/dist/locale/fr.js';
 
 import * as $ from 'jquery';
 import * as moment from 'moment';
 import 'fullcalendar';
+import {AgendaService} from "../service/agenda.service";
 
 @Component({
   selector: 'app-full-calendar',
   templateUrl: './full-calendar.component.html',
-  styleUrls: ['./full-calendar.component.css']
+  styleUrls: ['./full-calendar.component.scss']
 })
 export class FullCalendarComponent implements OnInit {
   @Input()
@@ -22,33 +23,43 @@ export class FullCalendarComponent implements OnInit {
 
   defaultConfigurations: any;
 
-  constructor() {
-    this.eventData = [
-      {
-        title: 'event1',
-        start: moment().subtract(30, 'minutes'),
-        end: moment().add(30, 'minutes'),
-        rendering: 'background',
-        overlap: true,
-      },
-      {
-        title: 'client',
-        start: moment().add(60, 'minutes'),
-        end: moment().add(90, 'minutes'),
-        editable: false,
-        overlap: false,
-      },
-      {
-        title: 'pro',
-        start: moment().add(30, 'minutes'),
-        end: moment().add(60, 'minutes'),
-        overlap: false,
-        durationEditable: false,
-        editable: false,
-        color: 'grey',
-        textColor: 'black',
-      },
-    ];
+  constructor(public agendaService: AgendaService) {
+    this.eventData = [];
+
+    for(let el of agendaService.listEvents){
+      this.eventData.push = {
+        title: el.summary,
+        start: el.start.dateTime,
+        end: el.end.dateTime,
+      }
+    }
+
+    // this.eventData = [
+    //   {
+    //     title: 'event1',
+    //     start: moment().subtract(30, 'minutes'),
+    //     end: moment().add(30, 'minutes'),
+    //     rendering: 'background',
+    //     overlap: true,
+    //   },
+    //   {
+    //     title: 'client',
+    //     start: moment().add(60, 'minutes'),
+    //     end: moment().add(90, 'minutes'),
+    //     editable: false,
+    //     overlap: false,
+    //   },
+    //   {
+    //     title: 'pro',
+    //     start: moment().add(30, 'minutes'),
+    //     end: moment().add(60, 'minutes'),
+    //     overlap: false,
+    //     durationEditable: false,
+    //     editable: false,
+    //     color: 'grey',
+    //     textColor: 'black',
+    //   },
+    // ];
 
     this.defaultConfigurations = {
       editable: true,
@@ -94,28 +105,29 @@ export class FullCalendarComponent implements OnInit {
       firstDay: 1,
       selectable: true,
       selectHelper: true,
-      // eventSources: [
-      //
-      //   // your event source
-      //   {
-      //     events: this.events,
-      //     color: 'black',     // an option!
-      //     textColor: 'yellow', // an option!
-      //     rendering: 'background'
-      //   },
-      //   {
-      //     events: this.events2,
-      //     color: 'blue',     // an option!
-      //     textColor: 'black' // an option!
-      //   },
-      //   {
-      //     events: this.events3
-      //   }
-      //
-      //   // any other event sources...
-      //
-      // ]
-      events: this.eventData,
+      progressiveEventRendering: true,
+      eventSources: [
+
+        // your event source
+        {
+          events: this.eventData,
+          color: 'black',     // an option!
+          textColor: 'yellow', // an option!
+          rendering: 'background',
+        },
+        // {
+        //   events: this.events2,
+        //   color: 'blue',     // an option!
+        //   textColor: 'black' // an option!
+        // },
+        // {
+        //   events: this.events3
+        // }
+
+        // any other event sources...
+
+      ],
+      // events: this.eventData,
       selectConstraint: 'businessHours',
       select: (start, end, jsEvent, view) => {
         if (start.isAfter(moment())) {
@@ -173,4 +185,9 @@ export class FullCalendarComponent implements OnInit {
       this.defaultConfigurations
     );
   }
+
+
+    // $('#full-calendar').fullCalendar(
+    //   this.defaultConfigurations
+
 }
