@@ -26,41 +26,6 @@ export class FullCalendarComponent implements OnInit {
   constructor(public agendaService: AgendaService) {
     this.eventData = [];
 
-    for(let el of this.agendaService.listEvents){
-      this.eventData.push({
-        title: el.summary,
-        start: el.start.dateTime,
-        end: el.end.dateTime,
-      })
-    }
-
-    // this.eventData = [
-    //   {
-    //     title: 'event1',
-    //     start: moment().subtract(30, 'minutes'),
-    //     end: moment().add(30, 'minutes'),
-    //     rendering: 'background',
-    //     overlap: true,
-    //   },
-    //   {
-    //     title: 'client',
-    //     start: moment().add(60, 'minutes'),
-    //     end: moment().add(90, 'minutes'),
-    //     editable: false,
-    //     overlap: false,
-    //   },
-    //   {
-    //     title: 'pro',
-    //     start: moment().add(30, 'minutes'),
-    //     end: moment().add(60, 'minutes'),
-    //     overlap: false,
-    //     durationEditable: false,
-    //     editable: false,
-    //     color: 'grey',
-    //     textColor: 'black',
-    //   },
-    // ];
-
     this.defaultConfigurations = {
       editable: true,
       eventLimit: true,
@@ -188,18 +153,29 @@ export class FullCalendarComponent implements OnInit {
     this.agendaService.listEventEmitter.subscribe(() => {
       console.log(this.agendaService.listEvents);
       this.reloadCalendar();
-    })
+    });
   }
 
   private reloadCalendar(): void {
-    this.eventData = [];
-
-    for(let el of this.agendaService.listEvents){
+    // this.eventData = []; <== le problème venais de là !!
+    for (const el of this.agendaService.listEvents){
+      // add event from API
       this.eventData.push({
         title: el.summary,
         start: el.start.dateTime,
         end: el.end.dateTime,
       });
+    }
+    // add freetime from API
+    for (const el of this.agendaService.listFreeTime){
+      this.eventData.push(
+        {
+          title: 'free',
+          start: el.start,
+          end: el.end,
+          color: 'green',
+        }
+      );
     }
     $('#full-calendar').fullCalendar(
       this.defaultConfigurations
