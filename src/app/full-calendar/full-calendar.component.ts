@@ -20,11 +20,13 @@ export class FullCalendarComponent implements OnInit {
   }
 
   @Input() eventData: any;
+  @Input() eventFree: any;
 
   defaultConfigurations: any;
 
   constructor(public agendaService: AgendaService) {
     this.eventData = [];
+    this.eventFree = [];
 
     this.defaultConfigurations = {
       editable: true,
@@ -71,6 +73,32 @@ export class FullCalendarComponent implements OnInit {
       selectable: true,
       selectHelper: true,
       // progressiveEventRendering: true,
+      // this.eventData = [
+      //   {
+      //     title: 'event1',
+      //     start: moment().subtract(30, 'minutes'),
+      //     end: moment().add(30, 'minutes'),
+      //     rendering: 'background',
+      //     overlap: true,
+      //   },
+      //   {
+      //     title: 'client',
+      //     start: moment().add(60, 'minutes'),
+      //     end: moment().add(90, 'minutes'),
+      //     editable: false,
+      //     overlap: false,
+      //   },
+      //   {
+      //     title: 'pro',
+      //     start: moment().add(30, 'minutes'),
+      //     end: moment().add(60, 'minutes'),
+      //     overlap: false,
+      //     durationEditable: false,
+      //     editable: false,
+      //     color: 'grey',
+      //     textColor: 'black',
+      //   },
+      // ];
       eventSources: [
 
         // your event source
@@ -81,12 +109,14 @@ export class FullCalendarComponent implements OnInit {
           overlap: false,
           durationEditable: false,
           editable: false,
+        },
+        {
+          events: this.eventFree,
+          color: 'green',     // an option!
+          textColor: 'black', // an option!
+          rendering: 'background',
+          overlap: true,
         }
-        // {
-        //   events: this.events2,
-        //   color: 'blue',     // an option!
-        //   textColor: 'black' // an option!
-        // },
         // {
         //   events: this.events3
         // }
@@ -98,7 +128,6 @@ export class FullCalendarComponent implements OnInit {
       selectConstraint: 'businessHours',
       select: (start, end, jsEvent, view) => {
         if (start.isAfter(moment())) {
-
           const eventTitle = prompt('Provide Event Title');
           if (eventTitle) {
             $('#calendar').fullCalendar('renderEvent', {
@@ -109,6 +138,12 @@ export class FullCalendarComponent implements OnInit {
             });
             console.log(start.format('h(:mm)a'), end.format('h(:mm)a'));
             alert('Appointment booked at: ' + start.format('h(:mm)a'));
+            const event = {
+              title: eventTitle,
+              start: start,
+              end: end,
+            };
+            agendaService.setNewEvent(event);
           }
         } else {
           alert('Cannot book an appointment in the past');
@@ -168,12 +203,11 @@ export class FullCalendarComponent implements OnInit {
     }
     // add freetime from API
     for (const el of this.agendaService.listFreeTime){
-      this.eventData.push(
+      this.eventFree.push(
         {
           title: 'free',
           start: el.start,
           end: el.end,
-          color: 'green',
         }
       );
     }
@@ -181,6 +215,7 @@ export class FullCalendarComponent implements OnInit {
       this.defaultConfigurations
     );
     console.log(this.eventData);
+    console.log(this.eventFree);
   }
 
 

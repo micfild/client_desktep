@@ -42,4 +42,9 @@ export class AgendaService {
 
       })
   }
+
+  setNewEvent(event: object): void {
+    console.log("setevent");
+    console.log(event);
+  }
 }
