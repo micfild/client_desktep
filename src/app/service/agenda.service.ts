@@ -43,8 +43,44 @@ export class AgendaService {
       })
   }
 
-  setNewEvent(event: object): void {
+  setNewEvent(event): void {
     console.log("setevent");
     console.log(event);
+    const jsonEvent = {
+      "summary": event.title ,
+      "start": {
+        "dateTime": this.ISODateString(event.start._d)
+      },
+      "end": {
+        "dateTime": this.ISODateString(event.end._d)
+      },
+      "recurence": {
+        "__initializer__": null,
+        "__cloner__": null,
+        "__isInitialized__": true
+      },
+      "attendees": [],
+      "reminder": {
+        "overrides": []
+
+      },
+      "user": "\/api\/users\/2"
+    }
+
+
+    console.log(jsonEvent)
+    this.httpClient.post('http://localhost:8000/api/events', jsonEvent )
+      .subscribe((result) => {
+        console.log(result);
+      });
   }
+
+  ISODateString(d){
+    function pad(n){return n<10 ? '0'+n : n}
+    return d.getUTCFullYear()+'-'
+      + pad(d.getUTCMonth()+1)+'-'
+      + pad(d.getUTCDate())+'T'
+      + pad(d.getUTCHours())+':'
+      + pad(d.getUTCMinutes())+':'
+      + pad(d.getUTCSeconds())}
 }
